@@ -19,12 +19,12 @@ class FoodPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => CartPage(userId: userId),
-              //   ),
-              // );
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(userId:chefid),
+                ),
+              );
             },
           ),
         ],
@@ -98,11 +98,42 @@ class FoodPage extends StatelessWidget {
     );
   }
 
-  void addToCart(BuildContext context, FoodItem foodItem) {
-    print('Adding to cart: $chefid');
-    // You can make a POST request to your backend to add the selected food item to the cart
-    // Example: http.post('your_backend_url/cart', body: {'userId': userId, 'foodItemId': foodItem.id});
+  void addToCart(BuildContext context, FoodItem foodItem,String loggedInChefId) async {
+  try {
+    // Check if the logged-in chef is trying to order their own food
+    if (foodItem.userId == loggedInChefId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You cannot order your own food'), backgroundColor: Colors.red,),
+      );
+      return;
+    }
+    final url = Uri.parse('http://192.168.1.8:3000/cart');
+    final response = await http.post(
+      url,
+      body: {
+        'chefId': loggedInChefId,
+        'foodItemId': foodItem.id.toString(),
+        'quantity': '1', // Assuming initially adding one item
+      },
+    );
+    print(loggedInChefId);
+    if (response.statusCode == 201) {
+  // Item added to cart successfully
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Item added to cart'),
+          backgroundColor: Colors.green,),
+  );
+    } else {
+      throw Exception('Failed to add item to cart');
+    }
+  } catch (e) {
+    print('Error adding item to cart: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to add item to cart'),
+          backgroundColor: Colors.red,),
+    );
   }
+}
 
   Future<List<FoodItem>> getFoodItems(String? chefId) async {
     // Update with your actual URL

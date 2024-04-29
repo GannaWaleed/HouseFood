@@ -477,31 +477,7 @@ app.get('/register/:userId', async (req, res) => {
           res.status(500).json({ error: 'Internal server error' });
         }
       });
-        // Update an Item in the Cart with input validation and error handling
-        app.put('/cart/:id', async (req, res) => {
-          const id = req.params.id;
-          const { quantity } = req.body;
-
-          // Validate input
-          if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
-            return res.status(400).json({ error: 'Invalid quantity' });
-          }
-          try {
-            // Find the cart item by ID and update its quantity by incrementing by 1
-            const updatedCartItem = await CartItem.findByIdAndUpdate(id,  { $inc: { quantity: 1 } }, { new: true });
-            if (!updatedCartItem) {
-              return res.status(404).json({ error: 'Cart item not found' });
-            }
-            console.log('Updated cart item:', updatedCartItem);
-            console.log('puuuuuut');
-            console.log('id :' , id);
-             console.log('quantity incremented by 1');
-            res.json(updatedCartItem);
-          } catch (error) {
-            console.error('Error updating cart item:', error);
-            res.status(500).json({ error: 'Internal server error' });
-          }
-        });// Increase quantity of an Item in the Cart
+       // Increase quantity of an Item in the Cart
         app.patch('/cart/increase/:id', async (req, res) => {
           const id = req.params.id;
           try {
@@ -605,7 +581,6 @@ app.get('/register/:userId', async (req, res) => {
         }
       });
 
-   //
        // Endpoint for fetching processing orders for a chef
             app.get('/orders/:chefId/processing', async (req, res) => {
               try {
@@ -664,7 +639,7 @@ app.get('/register/:userId', async (req, res) => {
                 // Fetch the user's ID associated with the order
                     const userId = updatedOrder.userId;
 
-   res.json(updatedOrder);
+             res.json(updatedOrder);
           } catch (error) {
             res.status(400).json({ error: error.message });
           }
